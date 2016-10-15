@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Lab Usage</title>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+    <script src="http://d3-legend.susielu.com/d3-legend.min.js"></script>
+
+    <style>
+    #info{
+      position:absolute;
+      width:120px;
+      height:auto;
+      padding:10px;
+      background-color:white;
+      border-radius:10px;
+      box-shadow: 4px 4px 10px rgba(0,0,0,0.4);
+    }
+
+    #info.hidden{
+      display:none;
+    }
+
+    #info p{
+      margin:0px;
+      font-family:sans-serif;
+      font-size:12px;
+    }
+    .brush .extent {
+        stroke: teal;
+        fill: teal;
+        stroke-opacity: .3;
+        fill-opacity: .4;
+        shape-rendering: crispEdges;
+    }
+    .axis text{
+          font-family:sans-serif;
+          font-size:10px;
+      }
+    .axis path,
+
+    .axis line{
+      fill:none;
+      stroke:gray;
+      shape-rendering: crisp-edges;
+    }
+
+  .line {
+    fill: none;
+    stroke: #e41a1c;
+    stroke-width: 1.5px;
+  }
+  .line2 {
+    fill: none;
+    stroke: #377eb8;
+    stroke-width: 1.5px;
+  }
+  .line3 {
+    fill: none;
+    stroke: #ff7f00;
+    stroke-width: 1.5px;
+  }
+  #startAndEnd {
+    position: absolute;
+    left: 800px;
+    top: 100px;
+    border-width:1px;
+    border-style:solid;
+    border-color:black;
+
+  }
+  #chart3 {
+    position: absolute;
+    left: 10px;
+    top: 100px;
+  }
+  #chart2 {
+    position: absolute;
+    left: 800px;
+    top: 190px;
+  }
+  #chart {
+    position: absolute;
+    left: 275px;
+    top: 825px;
+  }
+  #brush {
+    position: absolute;
+    top: 735px;
+    left: 260px;
+  }
+  #text1 {
+    position: absolute;
+    left: 600px;
+    top: 840px;
+  }
+  #text2 {
+    position: absolute;
+    top: 865px;
+    left: 282px;
+  }
+  #text3 {
+    position: absolute;
+    top: 885px;
+    left: 282px;
+  }
+  #text4{
+    position: absolute;
+    top: 905px;
+    left: 282px;
+  }
+  #title {
+    position: absolute;
+    top: 10px;
+    left: 15px;
+  }
+  #brushinfo {
+    position: absolute;
+    top: 770px;
+    left: 450px;
+  }
+  #names {
+    position: absolute;
+    top: 55px;
+    left: 100px;
+  }
+  #chart3textTitle{
+    position: absolute;
+    top: 115px;
+    left: 310px;
+  }
+  #chart3text1{
+    position: absolute;
+    top: 150px;
+    left: 25px;
+  }
+  #chart3text2{
+    position: absolute;
+    top: 170px;
+    left: 25px;
+  }
+
+  #chart2textTitle{
+    position: absolute;
+    top: 210px;
+    left: 910px;
+  }
+  #chart2text1{
+    position: absolute;
+    top: 235px;
+    left: 815px;
+  }
+  #chart2text2{
+    position: absolute;
+    top: 255px;
+    left: 815px;
+  }
+  #boxes {
+    position: absolute;
+    left:540px;
+    top:220px;
+  }
+
+  #boxes li{
+    list-style-type:none;
+  }
+  #colorLegend{
+    position: absolute;
+    top: 1000px;
+    left: 1075px;
+    border-width:1px;
+    border-style:solid;
+    border-color:black;
+  }
+  .label{
+        font-family:sans-serif;
+        font-size:11px;
+  }
+
+
+    </style>
+  </head>
+
+
+  <body>
+    <div id="brushinfo"></div>
+    <div id="title"></div>
+    <div id="chart3"></div>
+    <div id="chart2"></div>
+    <div id="chart"></div>
+    <div id="brush"></div>
+    <div id="text1"></div>
+    <div id="text2"></div>
+    <div id="text4"></div>
+    <div id="text3"></div>
+    <div id="names"></div>
+    <div id="chart3textTitle"></div>
+    <div id="chart3text1"></div>
+    <div id="chart3text2"></div>
+    <div id="chart2textTitle"></div>
+    <div id="chart2text1"></div>
+    <div id="chart2text2"></div>
+    <div id="boxes"></div>
+    <div id="colorLegend"></div>
+    <div id="startAndEnd">
+      <div id="description"></div>
+      <div id="start"></div>
+      <div id="end"></div>
+    </div>
+    <div id="info" class="hidden">
+    <p id="usage">Usage</p>
+      <p><span id="variable1">Variable X</span>: <span id="value1">Value 1</span></p>
+    </div>
+
+    <script>
+
+
+    var createVis = function (width, height){
+      var thisday = "Sun";
+      var barWidth = 300;
+      var barHeight = 300;
+      var lineWidth = 750;
+      var lineHeight = 400;
+      var axisWidth = 750;
+      var axisHeight = 100;
+
+      var title = d3.select("#title")
+        .append("text")
+        .text("Lab Usage")
+        .style({'font-family':'sans-serif', 'font-size':'40px', 'font-weight': 'bold'})
+        .style("fill","black");
+
+      var brushinfo = d3.select("#brushinfo")
+        .append("text")
+        .text("Feel free to highlight any segment along this time brush to change the time range.")
+        .style({'font-family':'sans-serif', 'font-size':'12px'})
+        .style("fill","black");
+
+      var names = d3.select("#names")
+        .append("text")
+        .text("By Alex Herdman and Aayam Poudel")
+        .style({'font-family':'sans-serif', 'font-size':'12px'})
+        .style("fill","black");
+
+
+      d3.select("#chart3textTitle").append("text")
+        .text("Per Day Usage")
+        .style({'font-family':'sans-serif', 'font-size':'20px', 'font-weight': 'bold'})
+        .style("fill","black");
+
+      d3.select("#chart3text1").append("text")
+        .text("This line chart shows the usage of all computers in terms of the number of people using it during the ")
+        .style({'font-family':'sans-serif', 'font-size':'15px'})
+        .style("fill","black");
+
+      d3.select("#chart3text2").append("text")
+        .text("selected time period. One can change the orange line by clicking on a rectangle on the Daily Usage Chart.")
+        .style({'font-family':'sans-serif', 'font-size':'15px'})
+        .style("fill","black");
+
+
+
+      var legendData = ["Non SSH", "SSH", "Selected Day (SSH included)"];
+
+
+      var legendColor = ["#e41a1c", "#377eb8", "#ff7f00"];
+
+      var legend = d3.select("#boxes")
+                    .append("ul");
+
+
+      var selection = legend.selectAll("li")
+                            .data(legendData)
+                            .enter()
+                            .append("li");
+
+      var span = selection.append("span")
+                          .style("padding-left","20px")
+                          .style("margin-right","10px")
+                          .style("background-color",function(d,i){return legendColor[i]})
+
+      var text = selection.append("span")
+                          .append("text")
+                          .text(function(d){return d})
+                          .style("font-family","sans-serif")
+                          .style("font-size","11px");
+
+
+      d3.select("#chart2textTitle").append("text")
+        .text("Daily Usage Chart")
+        .style({'font-family':'sans-serif', 'font-size':'20px', 'font-weight': 'bold'})
+        .style("fill","black");
+
+      d3.select("#chart2text1").append("text")
+        .text("This chart shows the average number of hours the lab")
+        .style({'font-family':'sans-serif', 'font-size':'15px'})
+        .style("fill","black");
+
+      d3.select("#chart2text2").append("text")
+        .text("is used on an average week of the selected period.")
+        .style({'font-family':'sans-serif', 'font-size':'15px'})
+        .style("fill","black");
+
+      var svg = d3.select('#chart')
+                  .append('svg')
+                  .attr({'width':width+25, 'height':height+25})
+                  .style("border", "1px solid black");
+
+      var margins = {top:10, bottom: 60, left: 60, right:15};
+
+
+      var chart = svg.append('g')
+        .attr('transform','translate('+(margins.left-55)+ ',' + (margins.top + 100) + ')');
+
+      var cScale = d3.scale.linear().range(["white","teal"]);
+
+
+      var svg2 = d3.select('#chart2')
+                   .append('svg')
+                   .attr({'width':barWidth + 100, 'height':barHeight + 150})
+                   .style("border", "1px solid black");
+
+      var chart2 = svg2.append('g')
+        .attr('transform','translate('+(margins.left + 20 )+ ',' + (margins.top + 150) +')');
+
+      var chartWidth = barWidth - margins.left - margins.right;
+      var chartHeight = barHeight - margins.top - margins.bottom;
+
+      var xBarScale = d3.scale.ordinal().rangeRoundBands([0, chartWidth], 0.1);
+      var yBarScale = d3.scale.linear().range([chartHeight, 0]);
+
+      var svg3 = d3.select('#chart3')
+                  .append('svg')
+                  .attr({'width':lineWidth, 'height':lineHeight+200})
+                  .style("border", "1px solid black");
+
+      var chart3 = svg3.append('g')
+              .attr('transform','translate('+margins.left + ',' + (margins.top + 200) + ')');
+
+      var chartLineWidth = lineWidth - margins.left - margins.right;
+      var chartLineHeight = lineHeight - margins.top - margins.bottom;
+
+      var xLineScale = d3.scale.linear().range([0, chartLineWidth]);
+
+      var yLineScale = d3.scale.linear().range([chartLineHeight, 0]);
+
+      var axisSvg = d3.select("#brush")
+                      .append("svg")
+                      .attr({'width':axisWidth, 'height':axisHeight});
+
+      var axisG = axisSvg.append("g")
+                         .attr('transform','translate('+margins.left + ',' + margins.top+ ')');
+
+
+      var vis = function(){
+        var startDate = new Date("2015-08-27T16:48"); /*  TODO CHANGE THE GMT EST THING  */
+        var endDate = new Date("2016-04-26T00:01");
+
+
+        var xAxisAxis = d3.time.scale()
+                          .range([0, +axisWidth - margins.left - margins.right]);
+
+
+        xAxisAxis.domain([startDate, endDate])
+                 .nice(d3.time.week);
+
+        axisG.selectAll("g").remove();
+
+
+        axisG.append("g")
+           .attr("class", "axis")
+           .call(d3.svg.axis().scale(xAxisAxis).orient("bottom").ticks(10));
+
+        var brush = d3.svg.brush()
+                       .x(xAxisAxis);
+
+
+        axisG.append("g")
+             .attr("class", "x brush")
+             .call(brush)
+             .selectAll("rect")
+             .attr("y", -20)
+             .attr("height", 40);
+
+        brush.on("brush", function(d){
+
+        })
+        .on("brushend", function(d){
+          var e = brush.extent();
+          var startTime = e[0];
+          var endTime = e[1];
+          changeAfterBrush(startTime,endTime);
+          vis.changeData("Sun");
+          vis();
+        })
+
+
+        nestedData = dataset;
+        lineGraphArrayUsable = dataset2;
+
+        xLineScale.domain(d3.extent(lineGraphArrayUsable, function(d) {return +d.key;}));
+        yLineScale.domain([0, d3.max(lineGraphArrayUsable, function(d) { return d3.max([d.usage, d.sshUsage]); })]);
+
+        var line = d3.svg.line()
+          .x(function(d) { return xLineScale(d.key); })
+          .y(function(d) { return yLineScale(+d.usage); });
+
+        var line2 = d3.svg.line()
+          .x(function(d) { return xLineScale(d.key); })
+          .y(function(d) { return yLineScale(+d.sshUsage); });
+
+        var line3 = d3.svg.line()
+          .x(function(d) { return xLineScale(d.key); })
+          .y(function(d) { return yLineScale(+d.thisDayUsage); });
+
+        chart3.selectAll("path").remove();
+        chart3.append("path")
+          .datum(lineGraphArrayUsable)
+          .attr("class", "line")
+          .attr("d", line);
+
+        chart3.append("path")
+          .datum(lineGraphArrayUsable)
+          .attr("class", "line2")
+          .attr("d", line2);
+
+        chart3.append("path")
+          .datum(lineGraphArrayUsable)
+          .attr("class", "line3")
+          .attr("d", line3);
+
+
+        var Sun = 0;
+        var Mon = 0;
+        var Tue = 0;
+        var Wed = 0;
+        var Thu = 0;
+        var Fri = 0;
+        var Sat = 0;
+
+        nestedData.forEach(function(d){
+          Sun += d.totalSun;
+          Mon += d.totalMon;
+          Tue += d.totalTue;
+          Wed += d.totalWed;
+          Thu += d.totalThu;
+          Fri += d.totalFri;
+          Sat += d.totalSat;
+        });
+
+        var usagePerDay =[{Day: "Sun", Usage: Sun},
+                          {Day: "Mon", Usage: Mon},
+                          {Day: "Tue", Usage: Tue},
+                          {Day: "Wed", Usage: Wed},
+                          {Day: "Thu", Usage: Thu},
+                          {Day: "Fri", Usage: Fri},
+                          {Day: "Sat", Usage: Sat}
+                          ];
+
+
+        xBarScale.domain(usagePerDay.map(function(d){return d.Day;}));
+        yBarScale.domain([0, d3.max(usagePerDay, function(d){return +d.Usage;})]);
+
+        chart2.selectAll("g").remove();
+
+
+
+        var bars = chart2.selectAll("rect")
+                        .data(usagePerDay);
+        bars.exit().remove();
+
+        bars.enter()
+            .append("rect")
+
+        bars.attr({x: function(d){return xBarScale(d.Day);},
+                   y: function(d){return yBarScale(+d.Usage);},
+                   width: xBarScale.rangeBand(),
+                   height: function(d){return chartHeight  - yBarScale(+d.Usage)}})
+            .style("fill", function(d){
+              if (d.Day === thisday){
+                return "#ff7f00";
+              }else{
+                return "green"
+              }
+            })
+            .on("click", function(d){
+              var day = d.Day;
+              vis.changeData(day);
+              vis();
+            });
+
+
+
+        var xAxis = d3.svg.axis()
+            .scale(xBarScale)
+            .orient("bottom");
+
+
+
+
+        chart2.append("g")
+          .attr("class","axis")
+          .attr("transform", "translate(0, " + chartHeight+")")
+          .call(xAxis)
+          .append("text")
+          .attr({
+            "x":chartWidth/2,
+            "y":margins.bottom/2,
+            "text-anchor":"middle"
+          })
+          .text("Day");
+
+        var yAxis = d3.svg.axis()
+          .scale(yBarScale)
+          .orient("left");
+
+
+
+        chart2.append("g")
+          .attr("class","axis")
+          .call(yAxis)
+          .append("text")
+          .attr({
+            "x":-chartHeight/2,
+            "y":3 * -margins.left/4,
+            "text-anchor":"middle",
+            "transform" : "rotate(-90)"
+          })
+          .text("Usage in Hours (avg.)");
+
+        chart3.selectAll("g").remove();
+
+        var xLineAxis = d3.svg.axis()
+            .scale(xLineScale)
+            .orient("bottom")
+            .ticks(24);
+
+
+        chart3.append("g")
+          .attr("class","axis")
+          .attr("transform", "translate(0, " + chartLineHeight+")")
+          .call(xLineAxis)
+          .append("text")
+          .attr({
+            "x":chartLineWidth/2,
+            "y":margins.bottom/2,
+            "text-anchor":"middle"
+          })
+          .text("Time of Day (military)");
+
+        var yLineAxis = d3.svg.axis()
+          .scale(yLineScale)
+          .orient("left");
+
+
+        chart3.append("g")
+          .attr("class","axis")
+          .call(yLineAxis)
+          .append("text")
+          .attr({
+            "x":-chartLineHeight/2,
+            "y":3 * -margins.left/4,
+            "text-anchor":"middle",
+            "transform" : "rotate(-90)"
+          })
+          .text("Usage (number of people)");
+
+
+
+        var minMaxArray = [];
+
+        nestedData.forEach(function(d){
+          minMaxArray.push(d.totalSun,d.totalMon,d.totalTue,d.totalWed,d.totalThu,d.totalFri,d.totalSat);
+        })
+
+
+
+        var min = d3.min(minMaxArray);
+        var max = d3.max(minMaxArray);
+
+        cScale.domain([0,max]);
+
+        var rectangles = chart.selectAll("rect")
+                              .data(nestedData);
+
+        rectangles.exit().remove();
+
+        rectangles.enter()
+            .append("rect");
+
+        rectangles.attr("x", function(d,i){
+              var j = i;
+              if(i<10){
+                j = i;
+              }
+              else if (i<20) {
+                j = i - 10;
+              }
+              else {
+                j = i - 20;
+              }
+
+              if(j >= 4){
+                j += 1;
+              }
+              return j*(width/11) + 6;
+            })
+            .attr("y", function(d,i){
+              if(i<10){
+                return 20;
+              }
+              else if (i<20) {
+                return (height/4) +20 ;
+              }
+              else {
+                return 2*(height/4) +20 ;
+              }
+            } )
+            .attr({
+              "width":width/11,
+              "height":height/3 -65,
+            })
+
+            .style("fill",function(d){
+
+              return cScale(d.thisduration);
+
+            })
+            .style("stroke","maroon")
+            .on("mouseover", function(d){
+
+              var info = d3.select("#info");
+              info.select("#usage").text(d.Usage);
+              info.select("#variable1").text("Usage (in hours)");
+              info.select("#value1").text(d.thisduration.toFixed(2));
+
+              var coordinates = d3.mouse(svg.node());
+              var bbox = svg.node().getBoundingClientRect();
+              coordinates[0] += bbox.left;
+              coordinates[1] += bbox.bottom;
+
+              info.style({
+                left: (coordinates[0] ) + "px",
+                top: (coordinates[1] + 60 ) + "px",
+              })
+              .classed("hidden", false);
+
+            })
+            .on("mouseout", function(d){
+              d3.select(this)
+                .classed("selected", false)
+                .attr("r", 2);
+
+                var info = d3.select("#info");
+                info.classed("hidden", true);
+            });
+
+            var colorLegend = d3.legend.color()
+
+            .labelFormat(d3.format(",.2f"))
+            .cells(5)
+            .scale(cScale);
+
+            d3.select("#colorLegend").selectAll("svg").remove();
+
+            var colorLegendDiv = d3.select("#colorLegend")
+                                   .append("svg")
+                                   .attr("width",98)
+                                   .attr("height",120)
+
+            colorLegendDiv2 = colorLegendDiv.append("g")
+                                 .attr("transform", "translate(20,20)")
+
+            colorLegendDiv2.append("text")
+                           .text("Usage(hr)")
+                           .style("font-size","12px")
+                           .style("font-family","sans-serif")
+                           .style("font-weight","bold");
+
+
+            colorLegendDiv2.append("text")
+                           .text(".");
+
+            colorLegendDiv2.call(colorLegend);
+
+
+
+            chart.selectAll("text")
+                .data(nestedData)
+                .enter()
+                .append("text")
+                .attr("x", function(d,i){
+                  var j = i -4  ;
+                  if(i<10){
+                    j = i;
+                  }
+                  else if (i<20) {
+                    j = i - 10;
+                  }
+                  else {
+                    j = i - 20;
+                  }
+
+                  if(j >= 4){
+                    j += 1;
+                  }
+                  return j*(width/11) + 14;
+                })
+                .attr("y", function(d,i){
+                  if(i<10){
+                    return 0 + (200/3) + 35;
+                  }
+                  else if (i<20) {
+                    return (height/3) + (200/3);
+                  }
+                  else {
+                    return 2*(height/3) + 35;
+                  }
+                } )
+                .text(function (d) {return d.key;})
+                .style({'font-family':'sans-serif', 'font-size':'10px'})
+                .style("fill","black");
+          }
+
+        d3.select("#text1").append("text")
+          .text("Heat Map")
+          .style({'font-family':'sans-serif', 'font-size':'20px','font-weight': 'bold'})
+          .style("fill","black");
+
+        d3.select("#text2").append("text")
+          .text("This heatmap shows weekly average usage in terms of hours for the brushed period's selected day.")
+          .style({'font-family':'sans-serif', 'font-size':'15px'})
+          .style("fill","black");
+
+        d3.select("#text3").append("text")
+          .text("Hover mouse on one of the rectangles to see its usgae shown using a tooltip.")
+          .style({'font-family':'sans-serif', 'font-size':'15px'})
+          .style("fill","black");
+
+        d3.select("#text4").append("text")
+          .text("Click a bar on the Daily Usage Chart to change the selected day. The front of the classroom is where this text is.")
+          .style({'font-family':'sans-serif', 'font-size':'15px'})
+          .style("fill","black");
+
+
+
+      vis.loadData = function(data, lineGraphData){
+        dataset = data;
+        for(var i= 0; i < dataset.length; i++){
+            dataset[i].thisduration = dataset[i].totalSun;
+        }
+        dataset2 = lineGraphData;
+        return vis;
+      }
+      vis.changeData = function(day){
+        thisday = day;
+        for(var i= 0; i < dataset.length; i++){
+          if(day === 'Sun'){
+            dataset[i].thisduration = dataset[i].totalSun;
+          }
+          else if(day === 'Mon'){
+            dataset[i].thisduration = dataset[i].totalMon;
+          }
+          else if(day === 'Tue'){
+            dataset[i].thisduration = dataset[i].totalTue;
+          }
+          else if(day === 'Wed'){
+            dataset[i].thisduration = dataset[i].totalWed;
+          }
+          else if(day === 'Thu'){
+            dataset[i].thisduration = dataset[i].totalThu;
+          }
+          else if(day === 'Fri'){
+            dataset[i].thisduration = dataset[i].totalFri;
+          }
+          else if(day === 'Sat'){
+            dataset[i].thisduration = dataset[i].totalSat;
+          }
+        }
+        for(var i= 0; i < lineGraphArrayUsable.length; i++){
+          if(day === 'Sun'){
+            lineGraphArrayUsable[i].thisDayUsage = lineGraphArrayUsable[i].sunUsage;
+          }
+          else if(day === 'Mon'){
+            lineGraphArrayUsable[i].thisDayUsage = lineGraphArrayUsable[i].monUsage;
+          }
+          else if(day === 'Tue'){
+            lineGraphArrayUsable[i].thisDayUsage = lineGraphArrayUsable[i].tueUsage;
+          }
+          else if(day === 'Wed'){
+            lineGraphArrayUsable[i].thisDayUsage = lineGraphArrayUsable[i].wedUsage;
+          }
+          else if(day === 'Thu'){
+            lineGraphArrayUsable[i].thisDayUsage = lineGraphArrayUsable[i].thuUsage;
+          }
+          else if(day === 'Fri'){
+            lineGraphArrayUsable[i].thisDayUsage = lineGraphArrayUsable[i].friUsage;
+          }
+          else if(day === 'Sat'){
+            lineGraphArrayUsable[i].thisDayUsage = lineGraphArrayUsable[i].satUsage;
+          }
+        }
+        return vis;
+      }
+      return vis;
+    }
+    var vis = createVis(750, 400);
+
+    var changeAfterBrush = function(brushStart, brushEnd){
+
+      var brushStartTime = brushStart.getTime();
+      var brushEndTime = brushEnd.getTime();
+
+      d3.select("#description").selectAll("text").remove();
+      d3.select("#start").selectAll("text").remove();
+      d3.select("#end").selectAll("text").remove();
+
+      var description= d3.select("#description");
+
+      description.append("text")
+                 .text("Brush desired time range below to change the start and end dates")
+                 .style({'font-family':'sans-serif', 'font-size':'14px', 'font-weight': 'bold'})
+                 .style("fill","black");
+      var startText= d3.select("#start");
+      var endText= d3.select("#end");
+
+
+      startText.append("text")
+                 .text("Start: " + brushStart +"\n")
+                 .style({'font-family':'sans-serif', 'font-size':'12px'})
+                 .style("fill","black");
+
+      endText.append("text")
+                  .text("End: " + brushEnd +"\n")
+                  .style({'font-family':'sans-serif', 'font-size':'12px'})
+                  .style("fill","black");
+
+
+
+
+      d3.csv('LabData.csv', function(dataset){
+
+        var nestedData = d3.nest()
+                           .key(function(d){return d.computer})
+                           .entries(dataset);
+
+        nestedData.forEach(function(d){
+
+          var totalSun = 0;
+          var totalMon = 0;
+          var totalTue = 0;
+          var totalWed = 0;
+          var totalThu = 0;
+          var totalFri = 0;
+          var totalSat = 0;
+
+          for(var i = 0; i < d.values.length; i++){
+            var thisStart = new Date(d.values[i].start);
+            var thisStartTime = thisStart.getTime();
+            var thisEnd = new Date(d.values[i].end);
+            var thisEndTime = thisEnd.getTime();
+
+            if (thisStartTime >= brushStartTime && thisEndTime <= brushEndTime){
+
+              if(d.values[i].day === "Sun"){
+                totalSun += +d.values[i].duration;
+              }
+              else if(d.values[i].day === "Mon" ){
+                totalMon += +d.values[i].duration;
+              }
+              else if(d.values[i].day === "Tue" ){
+                totalTue += +d.values[i].duration;
+              }
+              else if(d.values[i].day === "Wed" ){
+                totalWed += +d.values[i].duration;
+              }
+              else if(d.values[i].day === "Thu" ){
+                totalThu += +d.values[i].duration;
+              }
+              else if(d.values[i].day === "Fri" ){
+                totalFri += +d.values[i].duration;
+              }
+              else if(d.values[i].day === "Sat" ){
+                totalSat += +d.values[i].duration;
+              }
+            }
+          }
+          d.totalSun = totalSun/60/32; //we have 16 weeks of data here
+          d.totalMon = totalMon/60/32;
+          d.totalTue = totalTue/60/32;
+          d.totalWed = totalWed/60/32;
+          d.totalThu = totalThu/60/32;
+          d.totalFri = totalFri/60/32;
+          d.totalSat = totalSat/60/32;
+
+        });
+
+        var lineGraphArray = [];
+        nestedData.forEach(function(d){
+          d.values.forEach(function(e){
+            var start = new Date(e.start);
+            var fallBack = new Date(2015, 10, 1);
+            var springForward = new Date(2016, 2, 13);
+            if(start > fallBack && start < springForward){
+              start.setHours(start.getHours()+1);
+            }
+            if(end > fallBack && end < springForward){
+              end.setHours(end.getHours()+1);
+            }
+            var end = new Date(e.end);
+            var a = 0;
+            while(start < end){
+              var minutes = (Math.round(start.getMinutes()/10)*10) + a;
+              start.setMinutes(minutes);
+              var thisTime = new Date(start);
+              var thisDay = thisTime.getDay();
+              var hour = thisTime.getHours();
+              var minutes = thisTime.getMinutes();
+              var hour_minute = hour + "." + minutes;
+
+              hour_minute = +hour_minute + 4;
+
+              if(hour_minute > 24){
+                hour_minute = +hour_minute - 24;
+              }
+
+              var thisTimeComparable = thisTime.getTime();
+
+              if (thisTimeComparable >= brushStartTime && thisTimeComparable <= brushEndTime){
+                lineGraphArray.push({computer: e.computer, ssh: e.ssh, time: hour_minute, user: e.user, day: thisDay});
+              }
+              a = 10;
+            }
+          })
+        });
+
+
+        lineGraphArrayUsable = d3.nest()
+                                 .key(function(d){return d.time;})
+                                 .entries(lineGraphArray);
+
+
+        lineGraphArrayUsable.forEach(function(d){
+          var sshUsage = 0;
+          var sunUsage = 0;
+          var monUsage = 0;
+          var tueUsage = 0;
+          var wedUsage = 0;
+          var thuUsage = 0;
+          var friUsage = 0;
+          var satUsage = 0;
+
+          var usage = 0;
+
+          for(var i=0; i<d.values.length; i++){
+            if (d.values[i].ssh == "TRUE"){
+                sshUsage++;
+            }
+            else{
+              usage++;
+            }
+
+            if(d.values[i].day === 0 ){
+              +sunUsage++;
+            }
+            else if(d.values[i].day === 1 ){
+              +monUsage++;
+            }
+            else if(d.values[i].day === 2 ){
+              +tueUsage++;
+            }
+            else if(d.values[i].day === 3 ){
+              +wedUsage++;
+            }
+            else if(d.values[i].day === 4 ){
+              +thuUsage++;
+            }
+            else if(d.values[i].day === 5 ){
+              +friUsage++;
+            }
+            else if(d.values[i].day === 6 ){
+              +satUsage++;
+            }
+
+          }
+          d.sshUsage = sshUsage;
+          d.usage = usage;
+          d.sunUsage = sunUsage;
+          d.monUsage = monUsage;
+          d.tueUsage = tueUsage;
+          d.wedUsage = wedUsage;
+          d.thuUsage = thuUsage;
+          d.friUsage = friUsage;
+          d.satUsage = satUsage;
+          d.thisDayUsage = sunUsage;
+        });
+
+
+        lineGraphArrayUsable.sort(function(a, b){
+                  if(+a.key < +b.key) return -1;
+                  if(+a.key > +b.key) return 1;
+                  return 0;
+        });
+
+
+
+        vis.loadData(nestedData, lineGraphArrayUsable);
+        vis();
+
+      })
+
+    }
+
+    var startDateLoad = new Date("2015-08-27T16:48");
+    var endDateLoad = new Date("2016-04-26T00:01");
+    changeAfterBrush(startDateLoad,endDateLoad);
+
+
+
+    </script>
+  </body>
+</html>
